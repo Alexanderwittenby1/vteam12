@@ -1,0 +1,80 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=scooter_sharing
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend/escooter
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/escooter:/app
+      - /app/node_modules
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: scooter_sharing
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./backend/sql:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  # simulation:
+  #   build:
+  #     context: ./backend/simulation
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3005:3005"
+  #   environment:
+  #     - NODE_ENV=development
+  #   stdin_open: true
+  #   tty: true
+  #   depends_on:
+  #     - backend
+  #   volumes:
+  #     - ./backend/simulation:/simulation
+  #     - /simulation/node_modules 
+  #   networks:
+  #     - app-network
+
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -73,7 +73,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
             el.style.backgroundRepeat = 'no-repeat';
             el.style.cursor = 'pointer';
             el.style.borderRadius = '50%';
-            el.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.2)';
+            el.style.boxShadow = '0 0 10px rgba(187, 255, 0, 0.2)';
 
             const marker = new mapboxgl.Marker(el)
               .setLngLat([scooter.longitude, scooter.latitude])

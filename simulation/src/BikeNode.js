@@ -117,7 +117,7 @@ class User extends BikeNode {
         this.balance;
         this.payRate = 0.011;
         this.batteryRate = 0.0035;
-        this.baseSpeed = 30;
+        this.baseSpeed = 45;
     }
 
     async init() {
@@ -199,14 +199,16 @@ class User extends BikeNode {
         for (let i = 0; i < this.tripData.trips.length; i++) {
             const coords = this.tripData.trips[i];
             let currentIndex = 0;
-            let speed = this.baseSpeed / 3.6; // Speed in m/s
-            
+            let tripCost = 0;
+            let speed;
             const moveWithDelay = async () => {
                 if (currentIndex >= coords.length - 1 || this.balance <= 0 || this.battery_level <= 0) {
+                    this.balance += distance * this.payRate;
                     console.log("died id", this.simulation_id," balance: ", this.balance, "battery: ", this.battery_level);
                     return;
                 }
-                
+                speed = Math.floor((this.baseSpeed / 3.6) * (Math.random() * 0.65 + 0.35));
+
                 const currentCoord = coords[currentIndex];
                 const nextCoord = coords[currentIndex + 1];
                 
@@ -215,6 +217,7 @@ class User extends BikeNode {
                     {latitude: nextCoord[0], longitude: nextCoord[1]}
                 );
                 
+                tripCost += distance * this.payRate;
                 this.balance -= distance * this.payRate;
                 this.battery_level -= distance * this.batteryRate;
                 const timeInterval = distance / speed;
@@ -229,6 +232,7 @@ class User extends BikeNode {
                             simulation_id: this.simulation_id,
                             latitude: nextCoord[1],
                             longitude: nextCoord[0],
+                            speed: speed * 3.6,
                             battery_level: this.battery_level
                         })
                     });
@@ -237,38 +241,49 @@ class User extends BikeNode {
                     //     simulation_id: ${this.simulation_id}
                     //     battery level: ${this.battery_level}
                     //     balance: ${this.balance}
-                    //     latitude ${nextCoord[1]}
-                    //     longitude ${nextCoord[0]}
-                    //     distance ${distance}
-                    //     speed ${speed}
-                    //     timeInterval ${timeInterval}
-                    //     currenttrip ${i}
+                    //     latitude: ${nextCoord[1]}
+                    //     longitude: ${nextCoord[0]}
+                    //     distance: ${distance} m
+                    //     cost for sitance: ${distance * this.payRate}
+                    //     speed m/s: ${speed}
+                    //     speed km/h: ${speed * 3.6}
+                    //     timeInterval: ${timeInterval}
+                    //     currenttrip: ${i}
                     // `);
                     
                     currentIndex++;
-                    setTimeout(moveWithDelay, timeInterval * 1000);
+                    
+                    // Return a promise that resolves after the timeout
+                    return new Promise(resolve => {
+                        setTimeout(async () => {
+                            if (currentIndex < coords.length - 1) {
+                                await moveWithDelay();
+                            }
+                            resolve();
+                        }, timeInterval * 1000);
+                    });
                 } catch (error) {
                     console.error('Failed to update position:', error);
                 }
             };
         
-            moveWithDelay(); 
-        }
-
-        try {
-            await fetch(`http://localhost:4000/simulation/setMoney`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    simulation_id: this.simulation_id,
-                    amount: this.balance
-                })
-            });
-
-        } catch (error) {
-            console.error('Failed to update position:', error);
+            await moveWithDelay();
+    
+            try {
+                console.log("put setmoney cost: ", tripCost);
+                await fetch(`http://localhost:4000/simulation/setMoney`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        simulation_id: this.simulation_id,
+                        amount: this.balance
+                    })
+                });
+            } catch (error) {
+                console.error('Failed to update money:', error);
+            }
         }
     }
     

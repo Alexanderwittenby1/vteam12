@@ -57,7 +57,7 @@ exports.setMoney = async (req, res) => {
 };
 
 exports.updateBikePosition = (req, res) => {
-  const { simulation_id, latitude, longitude, battery_level} = req.body;
+  const { simulation_id, latitude, longitude, speed, battery_level} = req.body;
 
   if (!latitude || !longitude) {
     return res
@@ -69,6 +69,7 @@ exports.updateBikePosition = (req, res) => {
     simulation_id,
     latitude,
     longitude,
+    speed,
     battery_level,
     (error, result) => {
       if (error) {

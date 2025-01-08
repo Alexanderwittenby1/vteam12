@@ -1,4 +1,4 @@
-const modules = require("../simulation/src/modules");
+// const modules = require("../simulation/src/modules");
 const db = require("../config/dbConfig");
 
 const addTrip = (tripData, callback) => {
@@ -72,10 +72,10 @@ const setMoney = (simulation_id, amount, callback = () => {}) => {
   
   
 
-  const updateBikePositionInDb = (simulation_id, latitude, longitude, battery_level, callback) => {
+  const updateBikePositionInDb = (simulation_id, latitude, longitude, speed, battery_level, callback) => {
     const sql =
-      "UPDATE Scooter SET latitude = ?, longitude = ?, battery_level = ? WHERE simulation_id = ?";
-    db.query(sql, [latitude, longitude, battery_level, simulation_id], (error, results) => {
+      "UPDATE Scooter SET latitude = ?, longitude = ?, speed = ?, battery_level = ? WHERE simulation_id = ?";
+    db.query(sql, [latitude, longitude, speed, battery_level, simulation_id], (error, results) => {
       if (error) {
         return callback(error, null);
       }

@@ -34,6 +34,7 @@ CREATE TABLE Scooter (
     needs_service BOOLEAN DEFAULT FALSE,
     is_charging BOOLEAN DEFAULT FALSE,
     last_maintenance DATETIME,
+    speed INT DEFAULT 0,
     simulation_id INT NULL,
     status VARCHAR(20) NOT NULL,
     FOREIGN KEY (city_id) REFERENCES City(city_id),

@@ -72,7 +72,8 @@ class TripGenerator {
                         j--;
                         continue;
                     }
-                    
+                    // console.log("coordinates: ", coordinates);
+
                     bikeObject.trips.push(coordinates);
                     fs.appendFileSync("./trips/trips.csv", 
                         `"${this.generationId}","${j}","${JSON.stringify(coordinates)}"\n`);
@@ -90,7 +91,7 @@ class TripGenerator {
         
         return this.generationId - startId;
     }
-
+    
     createStartAndEndPoints(startPointInput = null) {
         const numberOfPoints = 1;
         

@@ -237,19 +237,19 @@ class User extends BikeNode {
                         })
                     });
                     
-                    console.log(`
-                        simulation_id: ${this.simulation_id}
-                        battery level: ${this.battery_level}
-                        balance: ${this.balance}
-                        latitude: ${nextCoord[1]}
-                        longitude: ${nextCoord[0]}
-                        distance: ${distance} m
-                        cost for sitance: ${distance * this.payRate}
-                        speed m/s: ${speed}
-                        speed km/h: ${speed * 3.6}
-                        timeInterval: ${timeInterval}
-                        currenttrip: ${i}
-                    `);
+                    // console.log(`
+                    //     simulation_id: ${this.simulation_id}
+                    //     battery level: ${this.battery_level}
+                    //     balance: ${this.balance}
+                    //     latitude: ${nextCoord[1]}
+                    //     longitude: ${nextCoord[0]}
+                    //     distance: ${distance} m
+                    //     cost for sitance: ${distance * this.payRate}
+                    //     speed m/s: ${speed}
+                    //     speed km/h: ${speed * 3.6}
+                    //     timeInterval: ${timeInterval}
+                    //     currenttrip: ${i}
+                    // `);
                     
                     currentIndex++;
                     

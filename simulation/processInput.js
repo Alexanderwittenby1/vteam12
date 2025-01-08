@@ -88,31 +88,31 @@ const processInput = () => {
                 processInput();
                 break;
             case "s c":
-                if (!simulation) {
-                    console.log("must start the simulation first")
-                    processInput();
-                    break; 
-                } else {
-                    i = 2;
-                    const validCities = ["karlshamn", "karlskrona", "kristianstad"];
-                    while (i < args.length) {
-                        if (validCities.includes(args[i]) && (!cities.includes(args[i]))) {
-                            cities.push(args[i])
+                // if (!simulation) {
+                //     console.log("must start the simulation first")
+                //     processInput();
+                //     break; 
+                // } else {
+                //     i = 2;
+                //     const validCities = ["karlshamn", "karlskrona", "kristianstad"];
+                //     while (i < args.length) {
+                //         if (validCities.includes(args[i]) && (!cities.includes(args[i]))) {
+                //             cities.push(args[i])
 
-                            i++
-                        } else {
-                            console.log("City doesnt exist choose between: karlskrona, karlshamn, kristanstad")
-                            i++
-                        }
+                //             i++
+                //         } else {
+                //             console.log("City doesnt exist choose between: karlskrona, karlshamn, kristanstad")
+                //             i++
+                //         }
                     
-                    }
-                    // cities = ["karlshamn", "karlskrona"]
+                //     }
+                    let cities = ["karlshamn", "karlskrona"]
                     simulation.setCities(cities)
                     console.log(cities, args.length)
                     // cities.push()
                     processInput();
                     break; 
-                }
+                // }
             case "s b":
                 if (!simulation) {
                     console.log("must start the simulation first");

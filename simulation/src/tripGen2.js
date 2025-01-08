@@ -6,8 +6,8 @@ const geolib = require('geolib');
 
 class TripGenerator {
     constructor() {
-        this.maxDistance = 1500;
-        this.minDistance = 400;
+        this.maxDistance = 500;
+        this.minDistance = 200;
         this.forbidden = [];
         this.routesPerBike;
         this.bikes;
@@ -144,11 +144,13 @@ class TripGenerator {
             const polygons = this.forbidden.map(feature => feature.geometry.coordinates[0]);
             let params = {
                 coordinates: coords,
+                geometry_simplify: false,
                 options: {
                     avoid_polygons: {
                         type: "MultiPolygon",
                         coordinates: [polygons]
-                    }
+                    },
+                    
                 }
             }
             

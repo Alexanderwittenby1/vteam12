@@ -8,7 +8,7 @@ dotenv.config(); // Ladda miljövariabler från .env fil
 
 
 const Stripe = require('stripe');
-const Simulation = require("../simulation/src/simulation");
+
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 router.post("/register", simulationController.registerUser);

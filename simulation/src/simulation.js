@@ -1,5 +1,4 @@
 
-
 const BikeUser = require("./BikeNode.js");
 const TripGenerator = require('./tripGen2.js');
 
@@ -86,7 +85,7 @@ class Simulation {
             }
         }
         
-        return "All bikes started successfully";
+        console.log("All bikes started successfully");
     }
     
 

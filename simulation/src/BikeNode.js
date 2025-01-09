@@ -64,7 +64,7 @@ class BikeNode {
             cityName2Id = {
                 "karlshamn": 1,
                 "karlskrona": 2,
-                "kristanstad": 3
+                "kristianstad": 3
             }
 
             // Ensure all required fields are present
@@ -201,12 +201,15 @@ class User extends BikeNode {
             let currentIndex = 0;
             let tripCost = 0;
             let speed;
+            let startPosition = coords[0];
+            let endPosition = coords[coords.length];
             const moveWithDelay = async () => {
                 if (currentIndex >= coords.length - 1 || this.balance <= 0 || this.battery_level <= 0) {
                     this.balance += distance * this.payRate;
                     console.log("died id", this.simulation_id," balance: ", this.balance, "battery: ", this.battery_level);
                     return;
                 }
+
                 speed = Math.floor((this.baseSpeed / 3.6) * (Math.random() * 0.65 + 0.35));
 
                 const currentCoord = coords[currentIndex];
@@ -284,6 +287,8 @@ class User extends BikeNode {
             } catch (error) {
                 console.error('Failed to update money:', error);
             }
+
+            
         }
     }
     

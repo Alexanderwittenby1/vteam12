@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-// Set access token
 mapboxgl.accessToken = 'pk.eyJ1IjoiaGFzc2FuYWJkdWxtb3V0aSIsImEiOiJjbTR1ZG1jZTIwZXc1MmtzZ3IxcmsyMzh6In0.e-FogYMEbxQBONfgRwV6Lg';
 
 interface MapComponentProps {
@@ -20,14 +19,13 @@ const MapComponent: React.FC<MapComponentProps> = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const markers = useRef<mapboxgl.Marker[]>([]);
+  const markers = useRef<Map<string, mapboxgl.Marker>>(new Map());
+
 
   useEffect(() => {
-    // Check if we're in browser and container exists
     if (!mapContainer.current) return;
 
     try {
-      // Create map instance
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v12',
@@ -35,10 +33,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
         zoom: zoom,
       });
 
-      // Add navigation control
       map.current.addControl(new mapboxgl.NavigationControl());
 
-      // Add geolocate control
       const geolocate = new mapboxgl.GeolocateControl({
         positionOptions: {
           enableHighAccuracy: true
@@ -48,7 +44,8 @@ const MapComponent: React.FC<MapComponentProps> = ({
       });
       map.current.addControl(geolocate);
 
-      // Function to fetch scooter data from API
+
+      // let activeMarkerIds = new Set();
       const fetchScooters = async () => {
         try {
           const response = await fetch('http://localhost:4000/bike/all');
@@ -56,52 +53,62 @@ const MapComponent: React.FC<MapComponentProps> = ({
             throw new Error('Failed to fetch scooters');
           }
           const scooters = await response.json();
+          console.log("fetch");
+      
+          const newScooterIds = new Set(scooters.map((scooter: any) => scooter.scooter_id));
+          console.log("Total current markers: ", markers.current.size);
 
-          // Remove existing markers
-          markers.current.forEach(marker => marker.remove());
-          markers.current = [];
-
-          // Add markers for each scooter
+          markers.current.forEach((marker, markerId) => {
+            if (!newScooterIds.has(markerId)) {
+              marker.remove(); 
+              markers.current.delete(markerId); 
+            }
+          });
+          
           scooters.forEach((scooter: any) => {
-            const el = document.createElement('div');
-            el.className = 'scooter-marker';
-            el.style.backgroundImage = 'url(./scooter.png)';
-            el.style.width = '32px';
-            el.style.height = '32px';
-            el.style.backgroundSize = 'contain';
-            el.style.backgroundPosition = 'center';
-            el.style.backgroundRepeat = 'no-repeat';
-            el.style.cursor = 'pointer';
-            el.style.borderRadius = '50%';
-            el.style.boxShadow = '0 0 10px rgba(187, 255, 0, 0.2)';
-
-            const marker = new mapboxgl.Marker(el)
-              .setLngLat([scooter.longitude, scooter.latitude])
-              .addTo(map.current!);
-
-            // Add click event listener to marker
-            marker.getElement().addEventListener('click', () => {
-              new mapboxgl.Popup()
+            const markerId = scooter.scooter_id;
+      
+            if (!markers.current.has(markerId)) {
+              const el = document.createElement('div');
+              el.className = 'scooter-marker';
+              el.style.backgroundImage = 'url(./scooter.png)';
+              el.style.width = '32px';
+              el.style.height = '32px';
+              el.style.backgroundSize = 'contain';
+              el.style.backgroundPosition = 'center';
+              el.style.backgroundRepeat = 'no-repeat';
+              el.style.cursor = 'pointer';
+              el.style.borderRadius = '50%';
+              el.style.boxShadow = '0 0 10px rgba(187, 255, 0, 0.2)';
+      
+              const marker = new mapboxgl.Marker(el)
                 .setLngLat([scooter.longitude, scooter.latitude])
-                .setHTML(`<h3>Scooter ID: ${scooter.id}</h3><p>Battery: ${scooter.battery}%</p>`)
                 .addTo(map.current!);
-            });
-
-            markers.current.push(marker);
+      
+              marker.getElement().addEventListener('click', () => {
+                new mapboxgl.Popup()
+                  .setLngLat([scooter.longitude, scooter.latitude])
+                  .setHTML(`<h3>Scooter ID: ${scooter.id}</h3><p>Battery: ${scooter.battery}%</p>`)
+                  .addTo(map.current!);
+              });
+      
+              markers.current.set(markerId, marker);
+            } else {
+              const marker = markers.current.get(markerId);
+              marker?.setLngLat([scooter.longitude, scooter.latitude]);
+            }
           });
         } catch (error) {
           console.error('Error fetching scooters:', error);
           setError('Failed to load scooters');
         }
       };
+      
 
-      // Fetch scooters initially
       fetchScooters();
 
-      // Set interval to fetch scooters every 10 seconds
-      const intervalId = setInterval(fetchScooters, 10000);
+      const intervalId = setInterval(fetchScooters, 1000);
 
-      // Cleanup interval on component unmount
       return () => clearInterval(intervalId);
     } catch (error) {
       console.error('Error initializing map:', error);

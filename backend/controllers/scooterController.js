@@ -12,7 +12,7 @@ exports.getAll = (req, res) => {
 };
 
 exports.add = (req, res) => {
-  console.log("Body:", req.body);
+  // console.log("Body:", req.body);
   scooterModel.addScooterToDb(req.body, (error, result) => {
     if (error) {
       console.log(error)

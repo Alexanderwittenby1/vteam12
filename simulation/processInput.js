@@ -106,7 +106,7 @@ const processInput = () => {
                 //         }
                     
                 //     }
-                    let cities = ["karlshamn", "karlskrona"]
+                    let cities = ["kristianstad", "karlshamn", "karlskrona"]
                     simulation.setCities(cities)
                     console.log(cities, args.length)
                     // cities.push()

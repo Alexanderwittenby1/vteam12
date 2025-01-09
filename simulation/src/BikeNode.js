@@ -64,7 +64,7 @@ class BikeNode {
             cityName2Id = {
                 "karlshamn": 1,
                 "karlskrona": 2,
-                "kristanstad": 3
+                "kristianstad": 3
             }
 
             // Ensure all required fields are present

@@ -22,15 +22,15 @@ getRecentTrips = (callback) => {
 };
 
 const addScooterToDb = (scooterData, callback) => {
-  console.log("scooterData", scooterData.city_id);
-  console.log("scooterData", scooterData.latitude);
-  console.log("scooterData", scooterData.longitude);
-  console.log("scooterData", scooterData.battery_level);
-  console.log("scooterData", scooterData.is_available);
-  console.log("scooterData", scooterData.needs_service);
-  console.log("scooterData", scooterData.is_charging);
-  console.log("scooterData", scooterData.last_maintenance);
-  console.log("scooterData", scooterData.status);
+  // console.log("scooterData", scooterData.city_id);
+  // console.log("scooterData", scooterData.latitude);
+  // console.log("scooterData", scooterData.longitude);
+  // console.log("scooterData", scooterData.battery_level);
+  // console.log("scooterData", scooterData.is_available);
+  // console.log("scooterData", scooterData.needs_service);
+  // console.log("scooterData", scooterData.is_charging);
+  // console.log("scooterData", scooterData.last_maintenance);
+  // console.log("scooterData", scooterData.status);
   db.query(
     "INSERT INTO Scooter (city_id, latitude, longitude, battery_level, is_available, needs_service, is_charging, last_maintenance, simulation_id, status) VALUES (?,?,?,?,?,?,?,?,?,?);",
     [

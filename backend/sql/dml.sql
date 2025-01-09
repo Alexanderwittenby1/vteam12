@@ -7,7 +7,8 @@ INSERT INTO user_table (email, password, oauth_provider, balance, payment_method
 
 INSERT INTO City (name, boundaries) VALUES
 ('New York', ST_GeomFromText('POLYGON((-74.25909 40.477399, -73.700171 40.477399, -73.700171 40.917577, -74.25909 40.917577, -74.25909 40.477399))')),
-('San Francisco', ST_GeomFromText('POLYGON((-123.173825 37.63983, -122.356658 37.63983, -122.356658 37.92982, -123.173825 37.92982, -123.173825 37.63983))'));
+('San Francisco', ST_GeomFromText('POLYGON((-123.173825 37.63983, -122.356658 37.63983, -122.356658 37.92982, -123.173825 37.92982, -123.173825 37.63983))')),
+('Kristianstad', ST_GeomFromText('POLYGON((-123.173825 37.63983, -122.356658 37.63983, -122.356658 37.92982, -123.173825 37.92982, -123.173825 37.63983))'));
 
 INSERT INTO Scooter (city_id, latitude, longitude, battery_level, is_available, needs_service, is_charging, last_maintenance, status)
 VALUES

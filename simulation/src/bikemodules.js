@@ -2,7 +2,10 @@
 function getCityZones(cityName) {
     let city = {}
     let forbidden = {}
-    let cityCoords
+    let cityCoords = {}
+    let stations = {}
+    let boundaries = {}
+    let parkingZones = {}
     try {
         city = require(`../cities/${cityName}.json`);
     } catch (err) {

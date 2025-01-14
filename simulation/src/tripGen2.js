@@ -6,8 +6,8 @@ const geolib = require('geolib');
 
 class TripGenerator {
     constructor() {
-        this.maxDistance = 1000;
-        this.minDistance = 500;
+        this.maxDistance = 1600;
+        this.minDistance = 400;
         this.forbidden = [];
         this.routesPerBike;
         this.bikes;

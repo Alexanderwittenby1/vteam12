@@ -69,6 +69,7 @@ CREATE TABLE Trip (
     trip_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     scooter_id INT NOT NULL,
+    simulation_id INT NULL,
     start_time DATETIME NOT NULL,
     end_time DATETIME,
     start_location POINT NOT NULL,

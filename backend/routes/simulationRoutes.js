@@ -17,11 +17,13 @@ router.post("/addTrip",  simulationController.addTrip);
 
 router.put("/addMoney", simulationController.addMoney);
 
+router.put("/updateStatus", simulationController.updateStatus);
+
 router.put("/setMoney", simulationController.setMoney);
 
 router.put("/bookBike", simulationController.bookBike);
 
-
+router.post("/getuserbikeid", simulationController.getUserBikeId);
 
 router.post("/deletesimulation", simulationController.deleteSimulation);
 

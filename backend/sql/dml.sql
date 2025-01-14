@@ -50,17 +50,23 @@ INSERT INTO ScooterLog (scooter_id, timestamp, location, speed, battery_level, e
 (2, '2023-11-28 08:15:00', ST_PointFromText('POINT(-73.980 40.728)'), 0.00, 45.25, 'Charging');
 
 DELIMITER //
-DROP PROCEDURE IF EXISTS delete_simulation;
+
+DROP PROCEDURE IF EXISTS delete_simulation//
 
 CREATE PROCEDURE delete_simulation()
 BEGIN
+    DELETE FROM Trip 
+    WHERE simulation_id IS NOT NULL;
+    
     DELETE FROM Scooter 
     WHERE simulation_id IS NOT NULL;
+    
     DELETE FROM user_table
     WHERE simulation_id IS NOT NULL;
 END //
 
 DELIMITER ;
+
 
 DELIMITER //
 
@@ -90,6 +96,16 @@ BEGIN
 
   -- Lägg till en ny resa med start_time
   INSERT INTO Trip (scooter_id, user_id, start_time) VALUES (scooter_id, user_id, NOW());
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE get_user_bike_id(IN in_simulation_id INT)
+BEGIN
+    SELECT scooter_id FROM Scooter WHERE in_simulation_id = simulation_id;
+    SELECT user_id FROM user_table WHERE in_simulation_id = simulation_id;
 END //
 
 DELIMITER ;

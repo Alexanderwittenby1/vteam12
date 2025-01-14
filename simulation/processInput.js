@@ -19,6 +19,7 @@ Start (s): Starts the simulation and creates the simulation instance.
 initiate bikes <amount> (i b <amount>): inities an n amount of bikes.
 set cities <city> <city> <city>(s c <city>): sets which citys to generate for can take up to 3 at once.
 generate trips <tripsPerBike> (g t <amount>): starts the tripGeneration modules tripsberbike should be no higher then 4 or 5.
+generate bikes (g b) generates the bike nodes must be done before (s b).
 start bikes (s b): will books all bikes with corrensponding users.
 reset (r): resets and deletes previously generated trips and data.
 debug: shows dbug data.
@@ -72,47 +73,72 @@ const processInput = () => {
                 // console.log("aids:",simulation.totalBikes <=0 )
                 if (!simulation) {
                     console.log("must start the simulation first")
+                    processInput();
+                    break;
                 } else if (modules.checkTrips()){
                     console.log("trips already generated delete them with reset or reset.bash")
+                    processInput();
+                    break;
                 } else if (simulation.totalBikes <=0 ){
                     console.log("no bikes generated in simulation run initiate bikes first")
+                    processInput();
+                    break;
                 } else if (simulation.cities.length <= 0) {
                     console.log("no cities entered run set cities <city> first")
+                    processInput();
+                    break;
                 } else {
                     amount = parseInt(args[2]);
                     await simulation.generateTrips(amount);
-                    await simulation.createNewBikeNode();
                     
+                    processInput();
+                    break;
                 }
+            
+            case "g b":
+                if (!simulation) {
+                    console.log("must start the simulation first");
+                    processInput();
+                    break;
+                } else if (simulation.totalBikes <= 0) {
+                    console.log("No bikes initiated");
+                    processInput();
+                    break;
+                } else if (!modules.checkTrips()) {
+                    console.log("No trips generated!")
+                    processInput();
+                    break;
+                }
+                await simulation.createNewBikeNode();
                 
                 processInput();
                 break;
             case "s c":
-                // if (!simulation) {
-                //     console.log("must start the simulation first")
-                //     processInput();
-                //     break; 
-                // } else {
-                //     i = 2;
-                //     const validCities = ["karlshamn", "karlskrona", "kristianstad"];
-                //     while (i < args.length) {
-                //         if (validCities.includes(args[i]) && (!cities.includes(args[i]))) {
-                //             cities.push(args[i])
+                if (!simulation) {
+                    console.log("must start the simulation first")
+                    processInput();
+                    break; 
+                } else {
+                    i = 2;
+                    const validCities = ["karlshamn", "karlskrona", "kristianstad"];
+                    while (i < args.length) {
+                        if (validCities.includes(args[i]) && (!cities.includes(args[i]))) {
+                            cities.push(args[i])
 
-                //             i++
-                //         } else {
-                //             console.log("City doesnt exist choose between: karlskrona, karlshamn, kristanstad")
-                //             i++
-                //         }
+                            i++
+                        } else {
+                            console.log("City doesnt exist choose between: karlskrona, karlshamn, kristanstad")
+                            i++
+                        }
                     
-                //     }
-                    let cities = ["kristianstad", "karlshamn", "karlskrona"]
+                    }
+                    // let cities = ["kristianstad", "karlshamn", "karlskrona"]
                     simulation.setCities(cities)
                     console.log(cities, args.length)
                     // cities.push()
                     processInput();
                     break; 
-                // }
+                }
             case "s b":
                 if (!simulation) {
                     console.log("must start the simulation first");
@@ -128,7 +154,7 @@ const processInput = () => {
                     break;
                 }
 
-               
+                
                 await simulation.startBikes();
                 console.log("bikes started")
                 processInput();

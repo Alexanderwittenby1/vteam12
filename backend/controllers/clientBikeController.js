@@ -4,6 +4,7 @@ exports.bookBike = async (req, res) => {
   try {
     const payload = {
       user_id: req.body.userId,
+      simulation_id: req.body.simulation_id,
       email: req.body.email,
       scooter_id: req.body.scooter_id
     };

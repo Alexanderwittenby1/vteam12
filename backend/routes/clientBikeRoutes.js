@@ -15,3 +15,5 @@ router.put("/bookbike", clientBikeController.bookBike);
 router.put("/stopclientbike", clientBikeController.stopClientBike);
 
 router.put("/moveclientbike", clientBikeController.moveClientBike);
+
+module.exports = router

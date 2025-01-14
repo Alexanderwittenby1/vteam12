@@ -44,6 +44,29 @@ exports.bookBike = async (req, res) => {
   }
 };
 
+exports.updateStatus = async (req, res) => {
+  const simulation_id = req.body.simulation_id;
+  const status = req.body.status;
+
+  simulationModel.updateStatus(simulation_id, status, (error, user) => {
+    if (error) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.status(200).json({ status: "OK" });
+  });
+};
+
+exports.getUserBikeId = async (req, res) => {
+  const simulation_id = req.body.simulation_id;
+  
+  simulationModel.getUserBikeId(simulation_id, (error, user) => {
+    if (error) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.status(200).json(user);
+  });
+};
+
 exports.setMoney = async (req, res) => {
   const {simulation_id, amount} = req.body;
 
@@ -105,66 +128,61 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.addTrip = async (req, res) => {
-  console.log("User from token:", req.user);
+  // console.log("User from token:", req.user);
 
   const {
+    user_id,
+    scooter_id,
+    simulation_id,
     start_time,
     end_time,
     start_location,
     end_location,
     distance,
     cost,
-    base_fee,
     time_fee,
     parking_fee,
-    scooter_id,
     payment_status,
   } = req.body;
 
-  const userId = req.user.userId;
-
   if (
-    !userId ||
     !start_time ||
     !start_location ||
-    !scooter_id ||
     !payment_status
   ) {
     return res.status(400).json({
       message: "Missing required fields",
       missingFields: {
-        userId,
         start_time,
         start_location,
-        scooter_id,
+        simulation_id,
         payment_status,
       },
     });
   }
 
   const tripData = {
-    user_id: userId,
+    user_id,
     scooter_id,
+    simulation_id,
     start_time,
     end_time,
     start_location,
     end_location,
     distance,
     cost,
-    base_fee,
     time_fee,
     parking_fee,
     payment_status,
   };
 
-  try {
-    const tripId = await simulationModel.addTrip(tripData);
-    res.status(201).json({
-      message: "Trip added successfully",
-      tripId,
-    });
-  } catch (error) {
-    console.error("Error adding trip:", error);
-    res.status(500).json({ error: "Internal server error", tripData });
-  }
+  simulationModel.addTrip(tripData, (error, insertId) => {
+    if (error) {
+        console.error('Error adding trip:', error);
+        return;
+    }
+    console.log('Trip added successfully with ID:',insertId);
+    res.status(201).json({ message: "Trip skapad"});
+});
+
 };

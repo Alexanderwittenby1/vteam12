@@ -62,7 +62,7 @@ class Simulation {
                 const user = new BikeUser(i);
                 await user.init();  
                 this.allBikeNodes.push(user);
-                // console.log(`Created user and bike with simulation_id:`)
+                console.log(`Created user and bike with simulation_id: ${i}`)
                 
             }
             

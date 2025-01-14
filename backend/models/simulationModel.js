@@ -3,10 +3,11 @@ const db = require("../config/dbConfig");
 
 const addTrip = (tripData, callback) => {
     db.query(
-      "INSERT INTO Trip (user_id, scooter_id, start_time, end_time, start_location, end_location, distance, cost, time_fee, parking_fee, payment_status) VALUES (?, ?, ?, ?, ST_GeomFromText(?), ST_GeomFromText(?), ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO Trip (user_id, scooter_id, simulation_id, start_time, end_time, start_location, end_location, distance, cost, time_fee, parking_fee, payment_status) VALUES (?, ?, ?, ?, ?, ST_GeomFromText(?), ST_GeomFromText(?), ?, ?, ?, ?, ?)",
       [
         tripData.user_id,
         tripData.scooter_id,
+        tripData.simulation_id,
         tripData.start_time,
         tripData.end_time,
         `POINT(${tripData.start_location.lat} ${tripData.start_location.lng})`,
@@ -49,6 +50,30 @@ const getUserById = (userId, callback) => {
       }
     );
   };
+
+  const updateStatus = (simulation_id, status, callback) => {
+    db.query(
+      "UPDATE Scooter SET status = ? WHERE simulation_id = ?",
+      [status, simulation_id],
+      (error, results) => {
+        if (error) {
+          return callback(error);
+        }
+        callback(null, results);
+      }
+    );
+  };
+  
+
+  const getUserBikeId = (simulation_id, callback) => {
+    const sql = "CALL get_user_bike_id(?)";
+    db.query(sql, [simulation_id], (error, results) => {
+        if (error) {
+            return callback(error, null);
+        }
+        return callback(null, results);
+    });
+};
 
 const deleteSimulation = (callback) => {
     const sql = "CALL delete_simulation()"
@@ -105,5 +130,8 @@ module.exports = {
     "addTrip": addTrip,
     "createUser": createUser,
     "bookBike": bookBike,
-    "setMoney": setMoney
+    "setMoney": setMoney,
+    "getUserBikeId": getUserBikeId,
+    "updateStatus": updateStatus,
+    "getUserBikeId": getUserBikeId
 }

@@ -41,7 +41,7 @@ router.post("/create-checkout-session", async (req, res) => {
       req.headers.origin || "http://localhost:3000"
     }/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${req.headers.origin || "http://localhost:3000"}/cancel`;
-    console.log(userId);
+    // console.log(userId);
     // Skapa en Stripe-session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],

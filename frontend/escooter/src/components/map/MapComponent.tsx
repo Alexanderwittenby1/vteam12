@@ -94,6 +94,7 @@ const MapComponent: React.FC<MapComponentProps> = ({
       
               markers.current.set(markerId, marker);
             } else {
+              console.log([scooter.latitude, scooter.longitude])
               const marker = markers.current.get(markerId);
               marker?.setLngLat([scooter.longitude, scooter.latitude]);
             }

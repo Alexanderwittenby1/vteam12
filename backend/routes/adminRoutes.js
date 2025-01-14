@@ -10,7 +10,7 @@ router.get("/getAllUsers", verifyToken, isAdmin, adminController.getAllUsers);
 router.get("/profile/:id", verifyToken, isAdmin, adminController.getUserById);
 
 // uppdatera en annan användares profil
-router.put("/update/:id", verifyToken, isAdmin, adminController.updateUser);
+router.put("/update/:id", adminController.updateUser);
 
 // Route to delete a user by ID
 router.delete("/delete/:id", verifyToken, isAdmin, adminController.deleteUser);

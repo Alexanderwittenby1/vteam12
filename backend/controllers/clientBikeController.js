@@ -1,20 +1,38 @@
 const clientBikeModel = require("./../models/clientBikeModel.js");
-
+const simulationModel = require("./../models/simulationModel.js")
 exports.bookBike = async (req, res) => {
-  try {
-    const payload = {
-      user_id: req.body.userId,
-      simulation_id: req.body.simulation_id,
-      email: req.body.email,
-      scooter_id: req.body.scooter_id
-    };
+    try {
 
-    await clientBikeModel.bookBike(payload);
-    res.status(200).json({ status: "OK bike booked" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+      const { user_id, simulation_id, scooter_id } = req.body;
+      if ((!user_id || !simulation_id || !scooter_id) && simulation_id != 0) {
+        return res.status(400).json({
+          status: "error",
+          message: "Missing required fields in controller"
+        });
+      }
+  
+      const payload = {
+        user_id: user_id,
+        simulation_id: simulation_id,
+        scooter_id: scooter_id
+      };
+  
+      const result = await clientBikeModel.bookBike(payload);
+      return res.status(200).json({
+        status: "success",
+        message: "Bike booked successfully",
+        data: result
+      });
+  
+    } catch (error) {
+      console.error('Bike booking error:', error);
+      return res.status(500).json({
+        status: "error",
+        message: "Failed to book bike",
+        error: error.message
+      });
+    }
+  };
 
 exports.stopClientBike = async (req, res) => {
     try {

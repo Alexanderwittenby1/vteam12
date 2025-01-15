@@ -3763,3 +3763,8 @@
 2025-01-11 22:53:43 - GET /station/getParkingstationById - 172.18.0.1
 2025-01-12 18:38:48 - GET /station/getChargingstationById/all - 172.18.0.1
 2025-01-12 18:39:11 - GET /station/getChargingstationById/all - 172.18.0.1
+2025-01-10 15:17:41 - PUT /admin/update?id=5 - 172.18.0.1
+2025-01-11 16:43:40 - GET /simulation/getuserbikeid - 172.18.0.1
+2025-01-12 23:53:46 - POST /simulation/getuserbikeid - 172.18.0.1
+2025-01-13 16:31:16 - GET /dbwebb/ - ::ffff:172.18.0.1
+2025-01-13 16:31:17 - GET /dbwebb/ - ::ffff:172.18.0.1

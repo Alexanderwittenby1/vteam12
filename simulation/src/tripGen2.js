@@ -6,8 +6,8 @@ const geolib = require('geolib');
 
 class TripGenerator {
     constructor() {
-        this.maxDistance = 500;
-        this.minDistance = 200;
+        this.maxDistance = 1600;
+        this.minDistance = 400;
         this.forbidden = [];
         this.routesPerBike;
         this.bikes;
@@ -50,6 +50,7 @@ class TripGenerator {
             }
         });
 
+        // console.log(this.boundaries)
         const startId = this.generationId;
 
         for (let i = 0; i < this.bikes; i++) {
@@ -72,7 +73,8 @@ class TripGenerator {
                         j--;
                         continue;
                     }
-                    
+                    // console.log("coordinates: ", coordinates);
+
                     bikeObject.trips.push(coordinates);
                     fs.appendFileSync("./trips/trips.csv", 
                         `"${this.generationId}","${j}","${JSON.stringify(coordinates)}"\n`);
@@ -90,7 +92,7 @@ class TripGenerator {
         
         return this.generationId - startId;
     }
-
+    
     createStartAndEndPoints(startPointInput = null) {
         const numberOfPoints = 1;
         

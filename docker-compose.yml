@@ -53,24 +53,52 @@ services:
     networks:
       - app-network
 
-  # simulation:
-  #   build:
-  #     context: ./backend/simulation
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3005:3005"
-  #   environment:
-  #     - NODE_ENV=development
-  #   stdin_open: true
-  #   tty: true
-  #   depends_on:
-  #     - backend
-  #   volumes:
-  #     - ./backend/simulation:/simulation
-  #     - /simulation/node_modules 
-  #   networks:
-  #     - app-network
+  simulation:
+    build:
+      context: ./simulation
+      dockerfile: Dockerfile
+    ports:
+      - "3333:3333"
+    environment:
+      - NODE_ENV=development
+    # stdin_open: true
+    # tty: true
+    # depends_on:
+    #   - backend
+    volumes:
+      - ./simulation:/simulation
+      - /simulation/node_modules 
+      - /simulation/ors-docker
+    networks:
+      - app-network
+  
+  ors-app:
+      build:
+        context: ./simulation
+      container_name: ors-app
+      ports:
+        - "8082:8082"  
+        - "9001:9001"  
+      image: openrouteservice/openrouteservice:v8.0.0
 
+      volumes:  # Mount relative directories. ONLY for local container runtime. To switch to docker managed volumes see 'Docker Volumes configuration' section below.
+        - ./simulation/ors-docker:/home/ors
+        - ./simulation/ors-docker/files/sweden-latest.osm.pbf:/home/ors/files/sweden-latest.osm.pbf
+
+      networks:
+      - app-network
+
+      environment:
+        ors.engine.source_file: /home/ors/files/sweden-latest.osm.pbf
+        # ors.engine.profiles.cycling-electric.enabled: true
+        # REBUILD_GRAPHS: True  # Set to True to rebuild graphs on container start.
+        CONTAINER_LOG_LEVEL: INFO  # Log level for the container. Possible values: DEBUG, INFO, WARNING, ERROR, CRITICAL
+
+        XMS: 1g  # start RAM assigned to java
+        XMX: 2g  # max RAM assigned to java. Rule of Thumb: <PBF-size> * <profiles> * 2
+        # Example: 1.5 GB pbf size, two profiles (car and foot-walking)
+        # -> 1.5 * 2 * 2 = 6. Set xmx to be AT LEAST `-Xmx6g`
+        ADDITIONAL_JAVA_OPTS: ""  # further options you want to pass to the java command
 
 volumes:
   db-data:

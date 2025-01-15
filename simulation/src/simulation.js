@@ -1,13 +1,13 @@
 
 const BikeUser = require("./BikeNode.js");
+// const { use } = require("../routes.js");
 const TripGenerator = require('./tripGen2.js');
 
 class Simulation {
     constructor() {
-        this.init()
         this.allBikeNodes = []
         this.totalBikes = 0;
-        this.ApiEndpoint = "http://localhost:4000/api/"
+        // this.ApiEndpoint = "http://localhost:4000/api/"
         this.cities = [];
     }
 
@@ -37,6 +37,7 @@ class Simulation {
     
     bikesPerCity() {
         const bikesPerCity = Math.floor(this.totalBikes / this.cities.length);
+        console.log(bikesPerCity)
         const modulus = this.totalBikes % this.cities.length;
         let set = [];
         
@@ -68,6 +69,15 @@ class Simulation {
             
         }
     }
+
+    async generateClientBike() {
+        for (let i = 0; i < this.totalBikes; i++) {
+            const user = new BikeUser(i);
+            await user.initClientBike();  
+            this.allBikeNodes.push(user);
+            console.log(`Created user and bike with simulation_id: ${i}`)
+        }
+    }
     
     async startBikes() {
         const totalBikeCount = this.allBikeNodes.length;
@@ -87,9 +97,27 @@ class Simulation {
         
         console.log("All bikes started successfully");
     }
-    
 
-    init() {
+    stopClientBike(simulation_id) {
+        this.allBikeNodes[simulation_id].setStatus("stopped");
+    }
+
+    async startClientBike(scooter_id, user_id, simulation_id) {
+        console.log(`
+            scooter_id: ${scooter_id}
+            user_id: ${user_id}
+            simulation_id: ${simulation_id}
+            `)
+        await this.allBikeNodes[simulation_id].startClientBike(user_id, scooter_id);
+    }
+
+    moveClientBike(simulation_id, coords) {
+        if (this.allBikeNodes[simulation_id].status == "in_use") {
+            console.log("error on move bike")
+            throw new Error("bike in use!");
+        }
+        console.log("testg32");
+        this.allBikeNodes[simulation_id].moveBike(coords);
     }
 }
 

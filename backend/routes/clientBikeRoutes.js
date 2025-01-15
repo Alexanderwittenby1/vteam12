@@ -16,4 +16,6 @@ router.put("/stopclientbike", clientBikeController.stopClientBike);
 
 router.put("/moveclientbike", clientBikeController.moveClientBike);
 
+router.put("/startsimulation", clientBikeController.startSimulation);
+
 module.exports = router

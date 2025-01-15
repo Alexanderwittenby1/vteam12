@@ -17,9 +17,15 @@ router.post("/addTrip",  simulationController.addTrip);
 
 router.put("/addMoney", simulationController.addMoney);
 
+router.get("/profile/:id", adminController.getUserById);
+
 router.put("/updateStatus", simulationController.updateStatus);
 
 router.put("/setMoney", simulationController.setMoney);
+
+router.put("/setbikeuserid", simulationController.setBikeUserId);
+
+router.get("/alltrips", simulationController.getAllTrips)
 
 router.put("/bookBike", simulationController.bookBike);
 

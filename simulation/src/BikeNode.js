@@ -77,7 +77,7 @@ class BikeNode {
             simulation_id: this.simulation_id
         };
 
-        const url = "http://localhost:4000/bike/add"
+        const url = "http://backend:4000/bike/add"
         const response = await bikeModules.makeFetch("POST", url, payload);
         
     }
@@ -90,7 +90,7 @@ class BikeNode {
             speed: this.speed * 3.6,
             battery_level: this.battery_level
         }   
-        let url =  "http://localhost:4000/simulation/updateBikePosition"
+        let url =  "http://backend:4000/simulation/updateBikePosition"
         await bikeModules.makeFetch("PUT", url, payload)
     }
 
@@ -98,7 +98,7 @@ class BikeNode {
         let payload = {
             simulation_id: this.simulation_id
         };
-        let url = "http://localhost:4000/simulation/bookbike";
+        let url = "http://backend:4000/simulation/bookbike";
         const response = await bikeModules.makeFetch("PUT", url, payload)
     }
 
@@ -112,7 +112,7 @@ class BikeNode {
     }
 
     async getUserBikeId() {
-        let url = "http://localhost:4000/simulation/getuserbikeid";
+        let url = "http://backend:4000/simulation/getuserbikeid";
         let payload = {
             simulation_id: this.simulation_id
         }
@@ -128,7 +128,8 @@ class BikeNode {
         // console.log("end",this.tripEndPosition);
         // console.log("start",this.tripStartPosition)
         // console.log("this.tripCost: ", this.tripCost)
-        let url = "http://localhost:4000/simulation/addtrip";
+        // console.log("sending tripData for:", this.user_id)
+        let url = "http://backend:4000/simulation/addtrip";
         let payload = {
             user_id: this.user_id,
             scooter_id: this.scooter_id,
@@ -153,12 +154,20 @@ class BikeNode {
     }
 
     async updateStatus(status) {
-        let url = "http://localhost:4000/simulation/updateStatus";
+        let url = "http://backend:4000/simulation/updateStatus";
         let payload = {
             simulation_id: this.simulation_id,
             status: status
         }
         await bikeModules.makeFetch("PUT", url, payload)
+    }
+
+    async moveBike(coords) {
+
+        console.log("bikenode movebike", this.simulation_id)
+        this.latitude = coords.lat;
+        this.longitude = coords.lng;
+        await this.updateBikePosition();
     }
 }
 
@@ -185,20 +194,24 @@ class User extends BikeNode {
         await this.addMoney();
     }
 
-    async initiateUser() {
-        this.email = `simulatedUser${this.simulation_id}@test.com`;
-        this.password = `simulation${this.simulation_id}`;
-        this.balance = Math.floor(Math.random() * (250 - 100 + 1)) + 100;
-        // this.balance = 250;
-            let payload = {
-                password: this.password,
-                email: this.email,
-                simulation_id: this.simulation_id
-            };
+    async initClientBike() {
+        await super.initiateBike();
+    }
 
-            let url = "http://localhost:4000/simulation/register"
-            const response = await bikeModules.makeFetch("POST", url, payload)
-            await this.getUserBikeId();
+    async initiateUser() {
+            this.email = `simulatedUser${this.simulation_id}@test.com`;
+            this.password = `simulation${this.simulation_id}`;
+            this.balance = Math.floor(Math.random() * (250 - 100 + 1)) + 100;
+            // this.balance = 250;
+                let payload = {
+                    password: this.password,
+                    email: this.email,
+                    simulation_id: this.simulation_id
+                };
+
+                let url = "http://backend:4000/simulation/register"
+                const response = await bikeModules.makeFetch("POST", url, payload)
+                await this.getUserBikeId();
     }
 
     async addMoney() {
@@ -206,7 +219,7 @@ class User extends BikeNode {
                 simulation_id: this.simulation_id,
                 amount: this.balance
             };
-            let url = 'http://localhost:4000/simulation/addmoney';
+            let url = 'http://backend:4000/simulation/addmoney';
             const response = await bikeModules.makeFetch("PUT", url, payload)
     }
 
@@ -215,13 +228,58 @@ class User extends BikeNode {
         this.startTrip();
     }
 
+    async startClientBike(user_id, scooter_id) {
+        this.scooter_id = scooter_id;
+
+        await this.bookClientBike(user_id);
+        await this.startTrip(); 
+    }
+    
+
+    async bookClientBike(user_id) {
+        
+        try {
+            let url = `http://backend:4000/simulation/profile/${user_id}`;
+            let mode = "GET";
+            const response = await fetch(`${url}`, {
+                method: mode,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+            
+            const results = await response.json();
+            // console.log("results: ", results)
+            this.user_id = results.user_id;
+            this.balance = results.balance;
+            this.email = results.email;
+            return
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async setBikeUserId(id) {
+        let payload = {
+            user_id: id,
+            scooter_id: this.scooter_id
+        }
+        let url = `http://backend:4000/simulation/setbikeuserid`;
+        await bikeModules.makeFetch("PUT", url, payload)
+        
+    }
     async startTrip() {
+        // console.log("starttrip")
+
         for (let i = 0; i < this.tripData.trips.length; i++) {
             if (this.balance <= 0 || this.balance <= 0) {
                 // console.log("trip not started. BATTERY OR BALANCE IS 0")
                 return
             }
+            await this.setBikeUserId(this.user_id)
             await this.updateStatus("in_use");
+            this.status = "in_use"
             const coords = this.tripData.trips[i];
             this.tripCost = 0;
             this.timeFeecost = 0;
@@ -238,7 +296,10 @@ class User extends BikeNode {
                     // console.log("died id", this.simulation_id," balance: ", this.balance, "battery: ", this.battery_level);
                     return;
                 }
-
+                if (this.status == "stopped") {
+                    console.log("bike stopped: ", this.simulation_id)
+                    return;
+                }
                 speed = Math.floor((this.baseSpeed / 3.6) * (Math.random() * 0.65 + 0.35));
                 this.speed = speed;
 
@@ -263,14 +324,14 @@ class User extends BikeNode {
                     tripCost -= timeInterval * this.payRate;
                     this.balance = 15;
                     // 15 credits cap for pontential parking fees
-                    // console.log("this.balance reached 0: ", this.balance, "totaltripcostime: ", tripCost)
+                    console.log("this.balance reached 0: ", this.balance, "totaltripcostime: ", tripCost)
                     balanceReachedZero = true;
                     return;
                 }
 
                 if (this.battery_level <= 0) {
                     this.battery_level = 0;
-                    // console.log("battery level 0")
+                    console.log("battery level 0")
                     return
                 }
                 await this.updateBikePosition();
@@ -302,9 +363,11 @@ class User extends BikeNode {
         
             await moveWithDelay();
             this.speed = 0;
+            
             await this.updateBikePosition();
+            this.status = "active"
             this.updateStatus("active");
-
+            await this.setBikeUserId(null)
             this.timeFeecost = tripCost;
             this.tripEndPosition = coords[currentIndex];
             this.tripEndTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -315,12 +378,13 @@ class User extends BikeNode {
             } else {
                 this.balance -= this.parkingFees;
             }
-            let url2 = "http://localhost:4000/simulation/setMoney"
+            let url2 = "http://backend:4000/simulation/setMoney"
             let payload2 = {
                 simulation_id: this.simulation_id,
-                amount: this.balance
+                amount: this.balance,
+                user_id: this.user_id
             }
-            // console.log("put setmoney cost: ", this.balance);
+            console.log("put setmoney new account balance: ", this.balance, "totaltripscots: ", this.tripCost);
             await bikeModules.makeFetch("PUT", url2, payload2);
             await this.sendTripData();
         }

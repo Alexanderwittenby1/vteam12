@@ -1,6 +1,7 @@
 const clientBikeModel = require("./../models/clientBikeModel.js");
 const simulationModel = require("./../models/simulationModel.js")
 exports.bookBike = async (req, res) => {
+    console.log("bookbike")
     try {
 
       const { user_id, simulation_id, scooter_id } = req.body;
@@ -34,14 +35,30 @@ exports.bookBike = async (req, res) => {
     }
   };
 
+
+  exports.startSimulation = async (req, res) => {
+    // amount = amtal cyklar som ska skapas max 5 min 1
+    try {
+      const payload = {
+        amount: req.body.amount
+      };
+      
+      await clientBikeModel.startSimulation(payload);
+      res.status(200).json({ status: "simulation started" });
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
+
+
 exports.stopClientBike = async (req, res) => {
     try {
       const payload = {
-        scooter_id: req.body.scooter_id
+        simulation_id: req.body.simulation_id
       };
-  
       await clientBikeModel.stopClientBike(payload);
-      res.status(200).json({ status: "OK bike booked" });
+      res.status(200).json({ status: "OK bike stopped" });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
@@ -55,12 +72,12 @@ exports.moveClientBike = async (req, res) => {
     // }
 try {
     const payload = {
-    scooter_id: req.body.scooter_id,
-    coords: req.bod.coords
+    simulation_id: req.body.simulation_id,
+    coords: req.body.coords
     };
 
     await clientBikeModel.moveClientBike(payload);
-    res.status(200).json({ status: "OK bike booked" });
+    res.status(200).json({ status: "OK bike moved" });
 } catch (error) {
     res.status(500).json({ error: "Internal server error" });
 }

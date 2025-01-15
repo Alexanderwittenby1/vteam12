@@ -30,7 +30,7 @@ let amount;
 let simulation
 let cities = [];
 let i;
-const processInput = () => {
+const runInput = () => {
     readline.question("", async (input) => {
             const args = input.toLowerCase().split(' ');
             const command = args[0] + (args[1] ? ' ' + args[1] : '');
@@ -41,12 +41,12 @@ const processInput = () => {
                 break;
             case "help":
                 console.log(helpTxt)
-                processInput();
+                runInput();
                 break;
             case "s":
                 console.log("starting simulation")
                 simulation = new Simulation()
-                processInput();
+                runInput();
                 break;
             case "test response":
                 if (simulation) {
@@ -55,7 +55,7 @@ const processInput = () => {
                 } else {
                     console.log("start simulation first")
                 }
-                processInput();
+                runInput();
                 break;
             case "i b":
                 amount = parseInt(args[2]);
@@ -65,62 +65,62 @@ const processInput = () => {
                     console.log("gggg")
                     simulation.totalBikes = amount;
                 }
-              
-                processInput();
+                runInput();
                 break;
 
             case "g t":
                 // console.log("aids:",simulation.totalBikes <=0 )
                 if (!simulation) {
                     console.log("must start the simulation first")
-                    processInput();
+                    runInput();
                     break;
                 } else if (modules.checkTrips()){
                     console.log("trips already generated delete them with reset or reset.bash")
-                    processInput();
+                    runInput();
                     break;
                 } else if (simulation.totalBikes <=0 ){
                     console.log("no bikes generated in simulation run initiate bikes first")
-                    processInput();
+                    runInput();
                     break;
                 } else if (simulation.cities.length <= 0) {
                     console.log("no cities entered run set cities <city> first")
-                    processInput();
+                    runInput();
                     break;
                 } else {
                     amount = parseInt(args[2]);
                     await simulation.generateTrips(amount);
                     
-                    processInput();
+                    runInput();
                     break;
                 }
             
             case "g b":
                 if (!simulation) {
                     console.log("must start the simulation first");
-                    processInput();
+                    runInput();
                     break;
                 } else if (simulation.totalBikes <= 0) {
                     console.log("No bikes initiated");
-                    processInput();
+                    runInput();
                     break;
                 } else if (!modules.checkTrips()) {
                     console.log("No trips generated!")
-                    processInput();
+                    runInput();
                     break;
                 }
                 await simulation.createNewBikeNode();
                 
-                processInput();
+                runInput();
                 break;
             case "s c":
                 if (!simulation) {
                     console.log("must start the simulation first")
-                    processInput();
+                    runInput();
                     break; 
                 } else {
                     i = 2;
                     const validCities = ["karlshamn", "karlskrona", "kristianstad"];
+                    let cities = [];
                     while (i < args.length) {
                         if (validCities.includes(args[i]) && (!cities.includes(args[i]))) {
                             cities.push(args[i])
@@ -136,33 +136,74 @@ const processInput = () => {
                     simulation.setCities(cities)
                     console.log(cities, args.length)
                     // cities.push()
-                    processInput();
+                    runInput();
                     break; 
                 }
             case "s b":
+                let startedBikes = true;
                 if (!simulation) {
                     console.log("must start the simulation first");
-                    processInput();
+                    runInput();
                     break;
                 } else if (simulation.totalBikes <= 0) {
                     console.log("No bikes initiated");
-                    processInput();
+                    runInput();
                     break;
                 } else if (!modules.checkTrips()) {
                     console.log("No trips generated!")
-                    processInput();
+                    runInput();
                     break;
                 }
 
                 
                 await simulation.startBikes();
                 console.log("bikes started")
-                processInput();
+                runInput();
+                break;
+            case "c b":
+                amount = parseInt(args[2]);
+                if (amount > 5 || amount < 1) {
+                    console.log("max 5 and minimum 1 client bike")
+                    runInput();
+                    break;
+                } else if (! amount) {
+                    console.log("no amount given !")
+                    runInput();
+                    break;
+                }
+                simulation = new Simulation()
+                modules.reset();
+                await modules.resetDb();
+                simulation.totalBikes = amount;
+                let cities = ["karlskrona"]
+                simulation.setCities(cities)
+                await simulation.generateTrips(2);
+                await simulation.generateClientBike();
+                runInput();
+                    break;
+            case "start cb":
+                amount = parseInt(args[2]) ;
+                simulation.startClientBike(amount)
+                runInput();
+                break;
+            case "stop cb":
+                amount = parseInt(args[2]);
+                simulation.stopClientBike(amount)
+                runInput();
+                break;
+            case "move cb":
+                amount = parseInt(args[2]);
+                let coords = {
+                    lat: 56.172874,
+                    lng: 14.870897
+                }
+                simulation.moveClientBike(amount, coords)
+                runInput();
                 break;
             case "r":
                 modules.reset();
                 await modules.resetDb();
-                processInput();
+                runInput();
                 break;
             
             case "debug":
@@ -173,13 +214,13 @@ const processInput = () => {
                     `)
             default:
                 console.log("uknown command try help")
-                processInput();
+                runInput();
                 break;
         }
     });
 }
 
-processInput()
 
-
-module.exports = { processInput };
+module.exports = {
+    runInput
+};

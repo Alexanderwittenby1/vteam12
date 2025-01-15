@@ -58,3 +58,32 @@ body {
 .list-group-item:nth-child(even) {
   background-color: #e9ecef; /* Ljusare grå färg för jämna rader */
 }
+
+
+.custom-popup .mapboxgl-popup-close-button {
+  font-size: 24px;
+  padding: 8px 12px;
+  color: white;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0 8px 0 8px;
+  transition: all 0.2s ease;
+  top: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.custom-popup .mapboxgl-popup-close-button:hover {
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.custom-popup .mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.mapboxgl-popup-content {
+  padding: 0 !important;
+}

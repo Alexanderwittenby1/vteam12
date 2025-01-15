@@ -11,14 +11,11 @@ INSERT INTO City (name, boundaries) VALUES
 
 INSERT INTO Scooter (city_id, latitude, longitude, battery_level, is_available, needs_service, is_charging, last_maintenance, status)
 VALUES
-(1, 40.7128, -74.0060, 80.00, TRUE, FALSE, FALSE, '2023-11-28 08:00:00', 'Available'),
-(1, 40.7308, -73.9850, 75.00, TRUE, FALSE, FALSE, '2023-11-28 09:00:00', 'Available'),
-(2, 40.7130, -74.0050, 90.00, TRUE, FALSE, FALSE, '2023-12-01 10:00:00', 'Available'),
-(2, 40.7160, -74.0100, 50.00, TRUE, TRUE, FALSE, '2023-12-03 11:00:00', 'Needs Service'),
-(1, 40.7100, -74.0020, 60.00, TRUE, FALSE, FALSE, '2023-12-07 14:00:00', 'Available'),
-(2, 40.7400, -73.9600, 85.00, TRUE, FALSE, FALSE, '2023-12-10 15:00:00', 'Available'),
-(2, 40.7325, -73.9750, 70.00, TRUE, FALSE, TRUE, '2023-12-15 17:30:00', 'Charging'),
-(1, 40.7115, -74.0055, 40.00, TRUE, TRUE, FALSE, '2023-12-18 18:30:00', 'Needs Service');
+(1, 56.1817, 15.5901, 80.00, TRUE, FALSE, FALSE, '2025-01-05 08:00:00', 'Available'),  -- At BTH main entrance
+(2, 56.1810, 15.5910, 90.00, TRUE, FALSE, FALSE, '2025-01-05 10:15:00', 'Available'),  -- Near student housing
+(1, 56.1815, 15.5920, 60.00, TRUE, FALSE, FALSE, '2025-01-05 13:20:00', 'Available'),  -- Near bus stop
+(2, 56.1820, 15.5915, 70.00, TRUE, FALSE, TRUE, '2025-01-05 15:55:00', 'Charging'),  -- Near charging station
+(1, 56.1812, 15.5898, 40.00, TRUE, TRUE, FALSE, '2025-01-05 16:30:00', 'Needs Service'); -- Near lecture halls
 
 
 INSERT INTO ChargingStation (city_id, name, location, capacity) VALUES

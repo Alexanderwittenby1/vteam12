@@ -1,8 +1,9 @@
 'use client'; 
 
-import { useState, useEffect  } from 'react';
+import { useState, useEffect, use  } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { fetchUserData } from "../../services/fetchUserData";
+import { getAuthToken } from '@/services/grabTokenFromCookies';
 
 
 console.log(loadStripe);
@@ -13,11 +14,13 @@ const Checkout = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [amount, setAmount] = useState(''); // Spara användarens valda belopp
   const [user, setUser] = useState(null);
-    
+
   
     useEffect(() => {
       const getUserData = async () => {
-        const userId = await fetchUserData();
+        const token = await getAuthToken();
+        const userId = await fetchUserData(token);
+        console.log("Userid -->",userId);
         setUser(userId.user_id);
         
       };

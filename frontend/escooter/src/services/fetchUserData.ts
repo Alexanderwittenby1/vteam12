@@ -1,3 +1,4 @@
+"use server";
 export const fetchUserData = async (token: string) => {
   try {
     console.log("Token in fetchUserData", token);

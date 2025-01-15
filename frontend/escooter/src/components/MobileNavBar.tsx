@@ -1,107 +1,106 @@
-import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { MapIcon, UserIcon, LogOutIcon, HistoryIcon } from 'lucide-react';
-import { useDeviceDetection } from './map/useDeviceDetection';
+'use client';
 
+import { MapIcon, ClockIcon, UserIcon, LogOutIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-interface NavItemProps {
-  icon: React.ReactNode;
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}
+type MobileNavBarProps = {
+  activeTab: 'map' | 'history' | 'profile';
+  onTabChange: (tab: 'map' | 'history' | 'profile') => void;
+};
 
-const NavItem = ({ icon, label, isActive, onClick }: NavItemProps) => (
-  <button
-    onClick={onClick}
-    className={`flex flex-col items-center justify-center w-full h-full px-1 py-2 space-y-1
-      transition-all duration-300 ease-in-out relative
-      ${isActive 
-        ? 'text-blue-600 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-8 after:h-1 after:bg-blue-600 after:rounded-t-full' 
-        : 'text-gray-600 hover:text-blue-500 hover:bg-blue-50'
-      }`}
-  >
-    <div className={`transition-transform duration-300 ${isActive ? 'scale-110' : 'scale-100'}`}>
-      {icon}
-    </div>
-    <span className={`text-xs font-medium transition-all duration-300 ${isActive ? 'font-semibold' : ''}`}>
-      {label}
-    </span>
-  </button>
-);
-
-const MobileNavBar = () => {
-  const { isMobile } = useDeviceDetection();
+export default function MobileNavBar({ activeTab, onTabChange }: MobileNavBarProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token');
-      setIsAuthenticated(!!token);
-    };
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/logout", {
+        method: "POST",
+        credentials: "include",
+      });
 
-    checkAuth();
-    window.addEventListener('storage', checkAuth);
-    return () => window.removeEventListener('storage', checkAuth);
-  }, []);
-
-  if (!isMobile || !isAuthenticated) {
-    return null;
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('is_Admin');
-    setIsAuthenticated(false);
-    router.push('/login');
+      if (response.ok) {
+        router.push('/login');
+      } else {
+        console.error("Failed to logout");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   const navItems = [
     {
-      icon: <MapIcon className="h-5 w-5" />,
+      id: 'map',
+      icon: MapIcon,
       label: 'Map',
-      path: '/map',
-      onClick: () => router.push('/map')
     },
     {
-      icon: <HistoryIcon className="h-5 w-5" />,
+      id: 'history',
+      icon: ClockIcon,
       label: 'History',
-      path: '/history',
-      onClick: () => router.push('/history')
     },
     {
-      icon: <UserIcon className="h-5 w-5" />,
+      id: 'profile',
+      icon: UserIcon,
       label: 'Profile',
-      path: '/mobile/profile',
-      onClick: () => router.push('/mobile/profile')
     },
     {
-      icon: <LogOutIcon className="h-5 w-5" />,
+      id: 'logout',
+      icon: LogOutIcon,
       label: 'Logout',
-      path: '/logout',
-      onClick: handleLogout
-    }
+      onClick: handleLogout,
+    },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 pb-6">
-      <nav className="bg-white border border-gray-200 rounded-2xl shadow-lg mx-auto max-w-md">
-        <div className="flex items-center justify-around h-16">
-          {navItems.map((item) => (
-            <NavItem
-              key={item.path}
-              icon={item.icon}
-              label={item.label}
-              isActive={pathname === item.path}
-              onClick={item.onClick}
-            />
-          ))}
-        </div>
-      </nav>
-    </div>
-  );
-};
+    <nav className="bg-white border-t border-gray-200 shadow-lg">
+      <div className="max-w-screen-xl mx-auto">
+        <div className="flex justify-around">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  if (item.onClick) {
+                    item.onClick();
+                  } else {
+                    onTabChange(item.id as 'map' | 'history' | 'profile');
+                  }
+                }}
+                className="flex flex-col items-center py-2 px-6 relative group"
+              >
+                <Icon 
+                  className={`h-6 w-6 transition-all duration-300 ${
+                    isActive 
+                      ? 'text-blue-600 scale-110' 
+                      : 'text-gray-500 group-hover:text-blue-400 group-hover:scale-105'
+                  }`}
+                />
+                <span 
+                  className={`text-xs mt-1 transition-all duration-300 ${
+                    isActive 
+                      ? 'text-blue-600' 
+                      : 'text-gray-500 group-hover:text-blue-400'
+                  }`}
+                >
+                  {item.label}
+                </span>
 
-export default MobileNavBar;
+                {/* Small dot indicator */}
+                <div 
+                  className={`absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 
+                    w-1 h-1 rounded-full transition-all duration-300 ${
+                    isActive ? 'bg-blue-600 opacity-100' : 'opacity-0'
+                  }`} 
+                />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </nav>
+  );
+}

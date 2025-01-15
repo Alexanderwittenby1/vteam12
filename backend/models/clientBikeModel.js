@@ -1,27 +1,33 @@
-let url = `http://localhost:3010/clientbike`;
+
 
 const bookBike = async (payload) => {
     try {
-        let mode = "PUT";
-        const response = await fetch(`${url}/bookbike`, {
-            method: mode,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        const results = await response.json();
-        return results;
+        let url = `http://simulation:3333/bookbike`;
+      const response = await fetch(`${url}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json();
+      return result;
+  
     } catch (error) {
-        throw error;
+      throw new Error(`Failed to book bike: ${error.message}`);
     }
-};
+  };
 
 const stopClientBike = async (payload) => {
     try {
+        let url = `http://simulation:3333/stopbike`;
         let mode = "PUT";
-        const response = await fetch(`${url}/stop`, {
+        const response = await fetch(`${url}`, {
             method: mode,
             headers: {
                 'Content-Type': 'application/json'
@@ -36,10 +42,30 @@ const stopClientBike = async (payload) => {
     }
 };
 
+const startSimulation = async (payload) => {
+  try {
+      let url = `http://simulation:3333/startsimulation`;
+      let mode = "POST";
+      const response = await fetch(`${url}`, {
+          method: mode,
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+      });
+      
+      const results = await response.json();
+      return results;
+  } catch (error) {
+      throw error;
+  }
+};
+
 const moveClientBike = async (payload) => {
+    let url = `http://simulation:3333/movebike`;
     try {
         let mode = "PUT";
-        const response = await fetch(`${url}/move`, {
+        const response = await fetch(`${url}`, {
             method: mode,
             headers: {
                 'Content-Type': 'application/json'
@@ -57,5 +83,6 @@ const moveClientBike = async (payload) => {
 module.exports = {
     "bookBike": bookBike,
     "stopClientBike": stopClientBike,
-    "moveClientBike": moveClientBike
+    "moveClientBike": moveClientBike,
+    "startSimulation": startSimulation
 }

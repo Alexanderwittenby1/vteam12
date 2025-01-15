@@ -75,6 +75,16 @@ const getUserById = (userId, callback) => {
     });
 };
 
+const getAllTrips = (callback) => {
+  const sql = "SELECT * FROM Trip";
+  db.query(sql, (error, results) => {
+      if (error) {
+          return callback(error, null);
+      }
+      return callback(null, results);
+  });
+};
+
 const deleteSimulation = (callback) => {
     const sql = "CALL delete_simulation()"
     db.query(sql, (error, results) => {
@@ -85,9 +95,20 @@ const deleteSimulation = (callback) => {
     });
   }
 
-const setMoney = (simulation_id, amount, callback = () => {}) => {
-  const sql = "UPDATE user_table SET balance = ? WHERE simulation_id = ?";
-  db.query(sql, [amount, simulation_id], (error, results) => {
+const setMoney = (simulation_id, amount, user_id, callback = () => {}) => {
+  const sql = "UPDATE user_table SET balance = ? WHERE simulation_id = ? OR user_id = ?";
+  db.query(sql, [amount, simulation_id, user_id], (error, results) => {
+    if (error) {
+      return callback(error, null);
+    }
+    callback(null, results);
+  });
+};
+
+
+const setBikeUserId = (scooter_id, user_id, callback = () => {}) => {
+  const sql = "UPDATE Scooter SET user_id = ? WHERE scooter_id = ?";
+  db.query(sql, [user_id, scooter_id], (error, results) => {
     if (error) {
       return callback(error, null);
     }
@@ -133,5 +154,7 @@ module.exports = {
     "setMoney": setMoney,
     "getUserBikeId": getUserBikeId,
     "updateStatus": updateStatus,
-    "getUserBikeId": getUserBikeId
+    "getUserBikeId": getUserBikeId,
+    "setBikeUserId": setBikeUserId,
+    "getAllTrips": getAllTrips
 }

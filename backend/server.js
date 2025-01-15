@@ -10,6 +10,7 @@ const scooterRoutes = require("./routes/scooterRoutes");
 const stationRoutes = require("./routes/stationRoutes");
 const userController = require("./controllers/userController");
 const simulationRoutes = require("./routes/simulationRoutes.js");
+const clientBikeRoutes = require("./routes/clientBikeRoutes.js");
 const http = require("http");
 const handleWebSocket = require("./webSocketHandler");
 const Stripe = require('stripe');
@@ -25,6 +26,7 @@ app.use(
     origin: "http://localhost:3000",
   })
 );
+app.use(express.json());
 app.use(cookieParser());
 app.use(compression());
 
@@ -61,12 +63,13 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   res.status(200).send('Webhook received');
 });
 
-app.use(express.json());
+
 app.use("/user", userRoutes);
 app.use("/bike", scooterRoutes);
 app.use("/admin", adminRoutes);
 app.use("/station", stationRoutes);
 app.use("/simulation", simulationRoutes);
+app.use("/clientbike", clientBikeRoutes);
 
 app.post('/logout', (req, res) => {
   res.clearCookie('token', {

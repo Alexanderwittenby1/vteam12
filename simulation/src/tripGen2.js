@@ -6,8 +6,8 @@ const geolib = require('geolib');
 
 class TripGenerator {
     constructor() {
-        this.maxDistance = 1600;
-        this.minDistance = 400;
+        this.maxDistance = 1500;
+        this.minDistance = 600;
         this.forbidden = [];
         this.routesPerBike;
         this.bikes;
@@ -156,7 +156,7 @@ class TripGenerator {
                 }
             }
             
-            const url = "http://localhost:8082/ors/v2/directions/cycling-electric/geojson";
+            const url = "http://ors-app:8082/ors/v2/directions/cycling-electric/geojson";
             const res = await fetch(url, {
                 method: 'POST',
                 headers: {

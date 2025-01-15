@@ -4,6 +4,9 @@ WORKDIR /simulation
 
 COPY package*.json ./
 RUN npm install
-CMD ["bash"]
 
-# CMD ["node", "processInput.js"]
+COPY . .
+
+EXPOSE 3333
+
+CMD ["node", "index.js"]

@@ -44,6 +44,29 @@ exports.bookBike = async (req, res) => {
   }
 };
 
+exports.getAllTrips = async (req, res) => {
+  
+  simulationModel.getAllTrips( (error, trips) => {
+    if (error) {
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.status(200).json(trips);
+  });
+};
+
+exports.setBikeUserId = async (req, res) => {
+  const user_id = req.body.user_id;
+  const scooter_id = req.body.scooter_id;
+
+  try {
+      await simulationModel.setBikeUserId(scooter_id, user_id);
+      res.status(200).json({ message: "Bike booked succefully" });
+  } catch (error) {
+      console.error("Error booking bike:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 exports.updateStatus = async (req, res) => {
   const simulation_id = req.body.simulation_id;
   const status = req.body.status;
@@ -68,10 +91,10 @@ exports.getUserBikeId = async (req, res) => {
 };
 
 exports.setMoney = async (req, res) => {
-  const {simulation_id, amount} = req.body;
+  const {simulation_id, amount, user_id} = req.body;
 
   try {
-      await simulationModel.setMoney(simulation_id, amount);
+      await simulationModel.setMoney(simulation_id, amount, user_id);
       res.status(200).json({ message: "money set succefully" });
   } catch (error) {
       console.error("Error booking bike:", error);

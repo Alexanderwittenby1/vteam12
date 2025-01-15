@@ -25,7 +25,7 @@ function checkTrips() {
 
 async function resetDb() {
     try {
-        const response = await fetch('http://localhost:4000/simulation/deletesimulation', {
+        const response = await fetch('http://backend:4000/simulation/deletesimulation', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
